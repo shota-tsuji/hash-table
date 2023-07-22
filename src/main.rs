@@ -1,7 +1,7 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 
-const DEFAULT_SIZE: usize = 100;
+const DEFAULT_SIZE: usize = 10;
 
 struct SwissTable<K, V> {
     size: usize,
@@ -23,8 +23,8 @@ impl<K, V> SwissTable<K, V>
     fn hash_function(&self, key: &K, attempt: usize) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash::<std::collections::hash_map::DefaultHasher>(&mut hasher);
-        (hasher.finish() as usize + attempt.pow(2))
-            % self.size
+        let result = hasher.finish() as usize;
+        (result + attempt.pow(2)) % self.size
     }
 
     fn find_slot(&self, key: &K) -> Option<usize> {
@@ -61,9 +61,12 @@ impl<K, V> SwissTable<K, V>
 }
 
 fn main() {
-    let mut table: SwissTable<&str, &str> = SwissTable::new(DEFAULT_SIZE);
-    table.insert("key1", "value1");
-    table.insert("key2", "value2");
-    println!("{:?}", table.get(&"key1"));
-    println!("{:?}", table.get(&"key3"));
+    let mut table: SwissTable<String, String> = SwissTable::new(DEFAULT_SIZE);
+    for i in 0..DEFAULT_SIZE {
+        let k = format!("k{}", i);
+        let v = format!("v{}", i);
+        table.insert(k, v);
+    }
+    println!("{:?}", table.get(&"k0".to_string()));
+    println!("{:?}", table.get(&"not found".to_string()));
 }
