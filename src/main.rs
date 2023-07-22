@@ -20,14 +20,14 @@ impl<K, V> SwissTable<K, V>
         }
     }
 
-    fn hash_function(&mut self, key: &K, attempt: usize) -> usize {
+    fn hash_function(&self, key: &K, attempt: usize) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash::<std::collections::hash_map::DefaultHasher>(&mut hasher);
         (hasher.finish() as usize + attempt.pow(2))
             % self.size
     }
 
-    fn find_slot(&mut self, key: &K) -> Option<usize> {
+    fn find_slot(&self, key: &K) -> Option<usize> {
         let mut attempt = 0;
         let mut index = self.hash_function(key, attempt);
         while let Some((k, _)) = &self.table[index] {
@@ -52,7 +52,7 @@ impl<K, V> SwissTable<K, V>
         }
     }
 
-    fn get(&mut self, key: &K) -> Option<&V> {
+    fn get(&self, key: &K) -> Option<&V> {
         if let Some(index) = self.find_slot(key) {
             return self.table[index].as_ref().map(|(_, v)| v);
         }
